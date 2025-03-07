@@ -9,6 +9,7 @@ function App() {
   const [numRequests, setNumRequests] = useState(1)
   const [restaurants, setRestaurants] = useState<Restaurant[]>([])
   const [loading, setLoading] = useState(false)
+  const [requestsSent, setRequestsSent] = useState(0)
 
   const handleNumRequestsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNumRequests(parseInt(e.target.value))
@@ -42,25 +43,41 @@ function App() {
     if (restaurants) {
       setRestaurants(JSON.parse(restaurants))
     }
+
+    const requestsSent = localStorage.getItem('requestsSent')
+    if (requestsSent) {
+      setRequestsSent(parseInt(requestsSent))
+    }
   }, [])
 
   return (
     <>
-      <div className="flex flex-col gap-5">
-        <label htmlFor="num-requests-slider">Select Number of Resturants to Fetch</label>
-        <input type="range" id="num-requests-slider" name="num-requests-slider" min="1" max="5" value={numRequests} onChange={handleNumRequestsChange}/>
-        <p>Fetch {numRequests * 20} Restaurants</p>
-        <button onClick={async () => {
-          setLoading(true)
-          await fetchRestaurants()
-          setLoading(false)
-        }} disabled={loading}>
-          {loading ? 'Fetching...' : 'Fetch Restaurants'}
-        </button>
+      <div className="flex flex-col gap-10 items-center">
+        <div className="top-content flex flex-col gap-5 max-w-lg items-center">
+          <h1>Paris Restaurant Fetcher</h1>
+          <h4><b>Instructions & Usage</b></h4>
+          <p>This uses Google Places to get restaurants at a random location in <b>Paris</b>. 
+          It then finds the instagram link inside the website of the restaurants it finds, 
+          if it doesn't find the instagram link it skippes that restaurant. <br /> <br />
+          The list can than be downloaded as a CSV file.
+          </p>
+        </div>
+        <div className="main-content flex flex-col gap-5">
+          <label htmlFor="num-requests-slider">Slide to select the number of restaurants to search for</label>
+          <input type="range" id="num-requests-slider" name="num-requests-slider" min="1" max="5" value={numRequests} onChange={handleNumRequestsChange}/>
+          <button onClick={async () => {
+            setLoading(true)
+            await fetchRestaurants()
+            setLoading(false)
+          }} disabled={loading || requestsSent >= 500}>
+            {loading ? 'Fetching...' : requestsSent >= 500 ? 'Reached your Limit' : `Fetch ${numRequests * 20} Restaurants`}
+          </button>
+        </div>
 
         {restaurants.length > 0 && (
           <>
-            <div className="flex flex-row gap-5">
+          <div className="flex flex-col gap-5 w-full">
+            <div className="flex flex-row gap-5 w-full">
               <button onClick={resetList}>Reset</button>
               <button onClick={downloadCSV}>Download CSV</button>
             </div>
@@ -82,6 +99,7 @@ function App() {
                 ))}
               </tbody>
             </table>
+          </div>
           </>
         )}
       </div>

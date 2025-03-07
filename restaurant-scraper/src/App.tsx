@@ -22,6 +22,10 @@ function App() {
 
     // Save the restaurants to localstorage
     localStorage.setItem('restaurants', JSON.stringify(updatedRestaurants))
+
+    // Update the number of requests sent
+    setRequestsSent(requestsSent + (1 * numRequests))
+    localStorage.setItem('requestsSent', (requestsSent + (1 * numRequests)).toString())
   }
 
   const downloadCSV = () => {
@@ -59,7 +63,8 @@ function App() {
           <p>This uses Google Places to get restaurants at a random location in <b>Paris</b>. 
           It then finds the instagram link inside the website of the restaurants it finds, 
           if it doesn't find the instagram link it skippes that restaurant. <br /> <br />
-          The list can than be downloaded as a CSV file.
+          The list can than be downloaded as a CSV file. <br /> <br />
+          Note: This can take a long time to process.
           </p>
         </div>
         <div className="main-content flex flex-col gap-5">

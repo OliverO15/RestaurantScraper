@@ -12,9 +12,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: npm ci
+        working-directory: ./restaurant-scraper
       - run: npm run build
+        working-directory: ./restaurant-scraper
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
+          entryPoint: ./restaurant-scraper
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_RESTAURANTSSCRAPERAPI }}
           channelId: live
